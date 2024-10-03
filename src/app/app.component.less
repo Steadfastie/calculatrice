@@ -19,7 +19,7 @@
   justify-items: center; 
 }
 
-input[type="number"], select {
+input[type="number"] {
   margin: 10px 0; 
   padding: 10px; 
   max-width: 300px; 
@@ -29,11 +29,6 @@ input[type="number"], select {
   font-family: "Open Sans", system-ui;
   text-align: center;
   outline: none; 
-}
-
-select {
-  box-shadow: none;
-  font-style: oblique; 
 }
 
 input::-webkit-outer-spin-button,
@@ -47,9 +42,46 @@ input::-webkit-inner-spin-button {
   grid-column: cm-start / cm-end;
 }
 
+.operators{
+  align-items: center;
+  position: relative;
+  display: flex;
+}
+
+carousel{
+  height: 40px;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;  
+}
+
+.gradient {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100px; 
+  pointer-events: none; 
+  z-index: 1; 
+}
+
+.gradient.left {
+  left: 0; 
+  background: linear-gradient(to right, white 10%, transparent); 
+}
+
+.gradient.right {
+  right: 0; 
+  background: linear-gradient(to left, white 10%, transparent); 
+}
+
 .op {
-  grid-row: rm2-start / rm2-end;
-  grid-column: cm-start / cm-end;
+  font-style: oblique;
+}
+
+.carousel-slide{
+  width: auto !important;
 }
 
 .n2 {
@@ -61,6 +93,7 @@ input::-webkit-inner-spin-button {
   grid-row: rm4-start / rm4-end;
   grid-column: cm-start / cm-end;
   align-self: center;
+  font-family: "Open Sans", system-ui;
   font-size: 20px;
   padding: 10px; 
   display: flex;
@@ -72,7 +105,7 @@ input::-webkit-inner-spin-button {
 .digit {
   display: inline-block;
   transition: transform 5s, opacity 0.5s ease-in-out;
-  font-family: monospace;
+  font-family: "Open Sans", system-ui;
   border-radius: @default-radius; 
   box-shadow: @default-box-shadow;
 }
@@ -95,3 +128,5 @@ input::-webkit-inner-spin-button {
     opacity: 100%;
   }
 }
+
+

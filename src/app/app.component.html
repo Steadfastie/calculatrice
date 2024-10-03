@@ -2,12 +2,19 @@
   <form [formGroup]="form" class="form">
     <input id="number1" type="number" formControlName="number1" class="n1" placeholder="0000">
     
-    <select id="operator" formControlName="operator" class="op">
-      <option [ngValue]="MathOperator.Add">{{ MathOperator.Add }}</option>
-      <option [ngValue]="MathOperator.Subtract">{{ MathOperator.Subtract }}</option>
-      <option [ngValue]="MathOperator.Multiply">{{ MathOperator.Multiply }}</option>
-      <option [ngValue]="MathOperator.Divide">{{ MathOperator.Divide }}</option>
-    </select>
+    <div class="operators">
+      <div class="gradient left"></div>
+      <div class="gradient right"></div> 
+      <carousel [infinite]=true [slideToScroll]=1 
+        [slideWidth]=50 [dots]=false [arrows]=false 
+        [counter]=false [maxDomSize]=4 [maxWidthCarousel]=190
+        [gapBetweenSlides]=12>
+        <div class="carousel-slide op">{{ MathOperator.Add }}</div>
+        <div class="carousel-slide op">{{ MathOperator.Subtract }}</div>
+        <div class="carousel-slide op">{{ MathOperator.Multiply }}</div>
+        <div class="carousel-slide op">{{ MathOperator.Divide }}</div>
+      </carousel>
+    </div>
   
     <input id="number2" type="number" formControlName="number2" class="n2" placeholder="0000">
     <div class="result"></div>

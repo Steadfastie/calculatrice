@@ -1,11 +1,17 @@
-import { Component, signal } from '@angular/core';
+import { Component, ElementRef, signal, ViewChild } from '@angular/core';
 import {Form, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { CarouselService } from 'ngx-carousel-ease';
 
 export enum MathOperator {
   Add = 'plus',
   Subtract = 'moins',
   Multiply = 'fois',
   Divide = 'divisé'
+}
+
+interface Sliding {
+  slide: number;
+  carouselID: number;
 }
 
 @Component({
@@ -21,7 +27,7 @@ export class AppComponent {
   result = signal<number | null>(null);
   MathOperator = MathOperator;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private carouselService: CarouselService) {
     this.form = this.formBuilder.group({
       number1: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       number2: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
@@ -100,4 +106,26 @@ export class AppComponent {
       }
     }
   }
+
+  ngOnInit() {
+    this.carouselService.onSlideChange.subscribe((value: any) => {
+      const slideAndID = value as Sliding;
+      console.log('Slide changed', slideAndID.slide);
+
+      const operators = [
+        MathOperator.Add,
+        MathOperator.Subtract,
+        MathOperator.Multiply,
+        MathOperator.Divide
+      ];
+      let index: number;
+      if (slideAndID.slide + 1 >= operators.length) {
+        index = 0;
+      } else {
+        index = slideAndID.slide + 1;
+      }
+      const operator = operators[index];
+      this.form.controls['operator'].setValue(operator);
+    });
+  };
 }
