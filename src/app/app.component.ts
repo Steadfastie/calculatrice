@@ -64,15 +64,40 @@ export class AppComponent {
         result = null;
     }
 
-    if (this.result() !== result) {
-      const resultElement = document.querySelector('.result') as HTMLElement;
-      this.result.set(result);
+    this.animateCounter(result);
+  }
 
-      resultElement.classList.add(result! > (this.result() || 0) ? 'counter-up' : 'counter-down');
-      
-      setTimeout(() => {
-        resultElement.classList.remove('counter-up', 'counter-down');
-      }, 300);
+  animateCounter(newResult: number | null) {
+    const resultElement = document.querySelector('.result') as HTMLElement;
+    const newResultString = newResult !== null ? newResult.toString() : '';
+
+    let currentDigits = resultElement.querySelectorAll('.digit');
+    for (let i = 0; i < newResultString.length - currentDigits.length; i++) {
+      const newDigit = document.createElement('span');
+      newDigit.classList.add('digit');
+      resultElement.appendChild(newDigit);
+    }
+
+    for (let i = 0; i < currentDigits.length - newResultString.length; i++) {
+      const currentDigit = currentDigits[currentDigits.length - (i + 1)] as HTMLElement;
+      resultElement.removeChild(currentDigit);
+    }
+
+    currentDigits = resultElement.querySelectorAll('.digit'); // refresh
+    for (let i = 0; i < Math.max(currentDigits.length, newResultString.length); i++) {
+      const currentDigit = currentDigits[i] as HTMLElement;
+      const newDigit = newResultString[i] || '0';
+
+      if (currentDigit) {
+        if (currentDigit.innerText !== newDigit) {
+          currentDigit.classList.add('flip');
+          
+          setTimeout(() => {
+            currentDigit.innerText = newDigit;
+            currentDigit.classList.remove('flip');
+          }, 400);
+        }
+      }
     }
   }
 }
