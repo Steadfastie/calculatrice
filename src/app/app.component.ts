@@ -41,15 +41,18 @@ export class AppComponent {
     this.form = this.formBuilder.group({
       number1: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       number2: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      operator: [MathOperator.Add, Validators.required]
     });
 
     this.form.valueChanges.subscribe(values => {
       this.n1.set(values.number1 ? parseFloat(values.number1) : null);
       this.n2.set(values.number2 ? parseFloat(values.number2) : null);
-      this.op.set(values.operator as MathOperator); 
       this.calculateResult();
     });
+
+    effect(() => {
+      const _ = this.op();
+      this.calculateResult();
+    }, { allowSignalWrites: true });
 
     effect(() => {
       const currentSpacing = this.sp();
@@ -117,18 +120,18 @@ export class AppComponent {
       var currentDigit = currentDigits[i];
       if (currentDigit) {
         if (currentDigit.innerText !== newDigit) {
-          this.applyDigitAnimation(currentDigit, newDigit);
+          this.applyUpdateAnimation(currentDigit, newDigit);
         }
       } else {
         const newDigitElement = document.createElement('span');
         newDigitElement.classList.add('digit');
         resultElement.appendChild(newDigitElement);
-        this.applyDigitAnimation(newDigitElement, newDigit);
+        this.applyUpdateAnimation(newDigitElement, newDigit);
       }
     }
   }
 
-  private applyDigitAnimation(digitElement: HTMLElement, newDigit: string) {
+  private applyUpdateAnimation(digitElement: HTMLElement, newDigit: string) {
     const animation = digitElement.animate([
         { transform: 'translateY(1px)', opacity: '100%' },
         { opacity: '0%' },
@@ -188,7 +191,8 @@ export class AppComponent {
           index = slideAndID.slide + 1;
         }
         const operator = operators[index];
-        this.form.controls['operator'].setValue(operator);
+        this.op.set(operator);
+        console.log('Operator set to', operator);
       }
 
       if (slideAndID.carouselID === 1){
