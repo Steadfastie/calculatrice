@@ -97,36 +97,13 @@ carousel{
   font-size: 20px;
   padding: 10px; 
   display: flex;
-  gap: 0.2ch; 
   text-align: center; 
-  transition: transform 0.3s ease;
 }
 
 .digit {
   display: inline-block;
-  transition: transform 5s, opacity 0.5s ease-in-out;
   font-family: "Open Sans", system-ui;
   border-radius: @default-radius; 
   box-shadow: @default-box-shadow;
 }
-
-.flip {
-  animation: flip 3.5s forwards;
-}
-
-@keyframes flip {
-  0% {
-    transform: rotateY(0deg);
-    opacity: 100%;
-  }
-  50% {
-    transform: rotateY(180deg);
-    opacity: 0%;
-  }
-  100% {
-    transform: rotateY(0deg);
-    opacity: 100%;
-  }
-}
-
 

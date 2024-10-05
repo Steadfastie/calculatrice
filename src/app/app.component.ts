@@ -1,5 +1,5 @@
-import { Component, ElementRef, signal, ViewChild } from '@angular/core';
-import {Form, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { Component, signal } from '@angular/core';
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { CarouselService } from 'ngx-carousel-ease';
 
 export enum MathOperator {
@@ -27,7 +27,9 @@ export class AppComponent {
   result = signal<number | null>(null);
   MathOperator = MathOperator;
 
-  constructor(private formBuilder: FormBuilder, private carouselService: CarouselService) {
+  constructor(private formBuilder: FormBuilder, 
+    private carouselService: CarouselService
+  ) {
     this.form = this.formBuilder.group({
       number1: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       number2: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
@@ -77,35 +79,47 @@ export class AppComponent {
     const resultElement = document.querySelector('.result') as HTMLElement;
     const newResultString = newResult !== null ? newResult.toString() : '';
 
-    let currentDigits = resultElement.querySelectorAll('.digit');
-    for (let i = 0; i < newResultString.length - currentDigits.length; i++) {
-      const newDigit = document.createElement('span');
-      newDigit.classList.add('digit');
-      resultElement.appendChild(newDigit);
-    }
-
-    for (let i = 0; i < currentDigits.length - newResultString.length; i++) {
-      const currentDigit = currentDigits[currentDigits.length - (i + 1)] as HTMLElement;
+    let currentDigits = Array.from(resultElement.querySelectorAll('.digit')) as HTMLElement[];
+    while (currentDigits.length > newResultString.length) {
+      const currentDigit = currentDigits.pop() as HTMLElement;
       resultElement.removeChild(currentDigit);
-    }
+  }
 
-    currentDigits = resultElement.querySelectorAll('.digit'); // refresh
-    for (let i = 0; i < Math.max(currentDigits.length, newResultString.length); i++) {
-      const currentDigit = currentDigits[i] as HTMLElement;
-      const newDigit = newResultString[i] || '0';
-
+    for (let i = 0; i < newResultString.length; i++) {
+      const newDigit = newResultString[i];
+      var currentDigit = currentDigits[i];
       if (currentDigit) {
         if (currentDigit.innerText !== newDigit) {
-          currentDigit.classList.add('flip');
-          
-          setTimeout(() => {
-            currentDigit.innerText = newDigit;
-            currentDigit.classList.remove('flip');
-          }, 400);
+          this.applyDigitAnimation(currentDigit, newDigit);
         }
+      } else {
+        const newDigitElement = document.createElement('span');
+        newDigitElement.classList.add('digit');
+        resultElement.appendChild(newDigitElement);
+        this.applyDigitAnimation(newDigitElement, newDigit);
       }
     }
   }
+
+  private applyDigitAnimation(digitElement: HTMLElement, newDigit: string) {
+    const animation = digitElement.animate([
+        { transform: 'translateY(1px)', opacity: '100%' },
+        { opacity: '0%' },
+        { transform: 'translateY(-1px)', opacity: '100%' }
+    ], {
+        duration: 500,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+    });
+
+    setTimeout(() => {
+        digitElement.innerText = newDigit;
+    }, 250);
+
+    setTimeout(() => {
+        animation.cancel();
+    }, 500);
+}
 
   ngOnInit() {
     this.carouselService.onSlideChange.subscribe((value: any) => {
@@ -113,10 +127,10 @@ export class AppComponent {
       console.log('Slide changed', slideAndID.slide);
 
       const operators = [
+        MathOperator.Divide,
         MathOperator.Add,
         MathOperator.Subtract,
-        MathOperator.Multiply,
-        MathOperator.Divide
+        MathOperator.Multiply
       ];
       let index: number;
       if (slideAndID.slide + 1 >= operators.length) {
