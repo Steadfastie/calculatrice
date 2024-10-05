@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, contentChildren, effect, ElementRef, signal, viewChild, viewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { CarouselService } from 'ngx-carousel-ease';
 
@@ -7,6 +7,11 @@ export enum MathOperator {
   Subtract = 'moins',
   Multiply = 'fois',
   Divide = 'divisé'
+}
+
+export enum Spacing {
+  Two = 'deux',
+  Three = 'trois',
 }
 
 interface Sliding {
@@ -24,8 +29,11 @@ export class AppComponent {
   n1 = signal<number | null>(null);
   n2 = signal<number | null>(null);
   op = signal<MathOperator>(MathOperator.Add);
+  sp = signal<Spacing>(Spacing.Two);
   result = signal<number | null>(null);
+  digitsUpdated = signal<boolean>(false);
   MathOperator = MathOperator;
+  Spacing = Spacing;
 
   constructor(private formBuilder: FormBuilder, 
     private carouselService: CarouselService
@@ -40,11 +48,22 @@ export class AppComponent {
       this.n1.set(values.number1 ? parseFloat(values.number1) : null);
       this.n2.set(values.number2 ? parseFloat(values.number2) : null);
       this.op.set(values.operator as MathOperator); 
-      this.calculate();
+      this.calculateResult();
+    });
+
+    effect(() => {
+      const currentSpacing = this.sp();
+      const _ = this.digitsUpdated();
+      this.applySpacing(currentSpacing);
+    });
+
+    effect(() => {
+      const currentResult = this.result();
+      this.renderResult(currentResult); 
     });
   }
 
-  calculate() {
+  calculateResult() {
     const num1 = this.n1();
     const num2 = this.n2();
     const operator = this.op();
@@ -66,16 +85,24 @@ export class AppComponent {
         result = num1 * num2;
         break;
       case MathOperator.Divide:
-        result = num2 !== 0 ? num1 / num2 : null;
+        if (num2 === 0) { 
+          result = null
+          break;
+        }
+        let rawResult = num1 / num2;
+        const lengthNum1 = (num1.toString().match(/\d/g) || []).length;
+        const lengthNum2 = (num2.toString().match(/\d/g) || []).length;
+        const maxLength = Math.max(lengthNum1, lengthNum2, 9);
+        result = parseFloat(rawResult.toFixed(maxLength));
         break;
       default:
         result = null;
     }
 
-    this.animateCounter(result);
+    this.result.set(result);
   }
 
-  animateCounter(newResult: number | null) {
+  renderResult(newResult: number | null) {
     const resultElement = document.querySelector('.result') as HTMLElement;
     const newResultString = newResult !== null ? newResult.toString() : '';
 
@@ -118,28 +145,60 @@ export class AppComponent {
 
     setTimeout(() => {
         animation.cancel();
+        this.digitsUpdated.set(!this.digitsUpdated());
     }, 500);
-}
+  }
+
+  private applySpacing(spacing: Spacing) {
+    const resultElement = document.querySelector('.result') as HTMLElement;
+    if (!resultElement) return;
+
+    const children = Array.from(resultElement.children) as HTMLElement[];
+
+    const spacingValue = spacing === Spacing.Two ? 2 : 3;
+
+    children.forEach(child => {
+      child.style.marginRight = '';
+    });
+  
+    children.filter(child => /^\d+$/.test(child.innerText.trim()))
+      .forEach((child, index) => {
+        if ((index + 1) % spacingValue === 0) {
+          child.style.marginRight = '3px'; 
+        }
+    });
+  }
 
   ngOnInit() {
     this.carouselService.onSlideChange.subscribe((value: any) => {
       const slideAndID = value as Sliding;
-      console.log('Slide changed', slideAndID.slide);
+      console.log('Slide changed', slideAndID.slide, slideAndID.carouselID);
 
-      const operators = [
-        MathOperator.Divide,
-        MathOperator.Add,
-        MathOperator.Subtract,
-        MathOperator.Multiply
-      ];
-      let index: number;
-      if (slideAndID.slide + 1 >= operators.length) {
-        index = 0;
-      } else {
-        index = slideAndID.slide + 1;
+      if (slideAndID.carouselID === 0) {
+        const operators = [
+          MathOperator.Divide,
+          MathOperator.Add,
+          MathOperator.Subtract,
+          MathOperator.Multiply
+        ];
+        let index: number;
+        if (slideAndID.slide + 1 >= operators.length) {
+          index = 0;
+        } else {
+          index = slideAndID.slide + 1;
+        }
+        const operator = operators[index];
+        this.form.controls['operator'].setValue(operator);
       }
-      const operator = operators[index];
-      this.form.controls['operator'].setValue(operator);
+
+      if (slideAndID.carouselID === 1){
+        const spacings = [
+          Spacing.Two,
+          Spacing.Three
+        ];
+        const spacing = spacings[slideAndID.slide];
+        this.sp.set(spacing);
+      }
     });
   };
 }

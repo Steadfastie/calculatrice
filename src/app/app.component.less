@@ -14,7 +14,7 @@
   grid-row: r-start / r-end;
   grid-column: c-start / c-end;
   grid-template-rows: [rm1-start] 1fr [rm1-end rm2-start] 1fr [rm2-end rm3-start] 1fr [rm3-end rm4-start] 1fr [rm4-end];
-  grid-template-columns: [cm-start] 1fr [cm-end];
+  grid-template-columns: [cm1-start] 1fr [cm1-end cm2-start] 1fr [cm2-end];
   display: grid;
   justify-items: center; 
 }
@@ -39,10 +39,12 @@ input::-webkit-inner-spin-button {
 
 .n1 {
   grid-row: rm1-start / rm1-end;
-  grid-column: cm-start / cm-end;
+  grid-column: cm1-start / cm1-end;
 }
 
 .operators{
+  grid-row: rm2-start / rm2-end;
+  grid-column: cm1-start / cm1-end;
   align-items: center;
   position: relative;
   display: flex;
@@ -86,12 +88,12 @@ carousel{
 
 .n2 {
   grid-row: rm3-start / rm3-end;
-  grid-column: cm-start / cm-end;
+  grid-column: cm1-start / cm1-end;
 }
 
 .result {
   grid-row: rm4-start / rm4-end;
-  grid-column: cm-start / cm-end;
+  grid-column: cm1-start / cm1-end;
   align-self: center;
   font-family: "Open Sans", system-ui;
   font-size: 20px;
@@ -105,5 +107,40 @@ carousel{
   font-family: "Open Sans", system-ui;
   border-radius: @default-radius; 
   box-shadow: @default-box-shadow;
+}
+
+.spacing{
+  grid-row: rm4-start / rm4-end;
+  grid-column: cm2-start / cm2-end;
+  align-items: center;
+  position: relative;
+  display: flex;
+}
+
+.sp {
+  font-style: oblique;
+}
+
+.gradient-sp {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 40px; 
+  pointer-events: none; 
+  z-index: 1; 
+}
+
+.gradient-sp.left {
+  left: 0; 
+  background: linear-gradient(to right, white 10%, transparent); 
+}
+
+.gradient-sp.right {
+  right: 0; 
+  background: linear-gradient(to left, white 10%, transparent); 
+}
+
+.space-after{
+  margin-right: 10px; 
 }
 

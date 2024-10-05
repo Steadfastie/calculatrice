@@ -17,6 +17,18 @@
     </div>
   
     <input id="number2" type="number" formControlName="number2" class="n2" placeholder="0000">
-    <div class="result"></div>
+
+    <div #result class="result"></div>
+
+    <div class="spacing">
+      <div class="gradient-sp left"></div>
+      <div class="gradient-sp right"></div> 
+      <carousel [slideToScroll]=1 [slideWidth]=50 [dots]=false [arrows]=false 
+        [counter]=false [maxDomSize]=2 [maxWidthCarousel]=100
+        [gapBetweenSlides]=6>
+        <div class="carousel-slide sp">{{ Spacing.Two }}</div>  
+        <div class="carousel-slide sp">{{ Spacing.Three }}</div>
+      </carousel>
+    </div>
   </form>
 </div>
