@@ -1,6 +1,6 @@
 <div class="container">
   <form [formGroup]="form" class="form">
-    <input id="number1" type="number" formControlName="number1" class="n1" placeholder="0000">
+    <input id="number1" type="number" formControlName="number1" class="n1" placeholder="entre ici-là..">
     
     <div class="operators">
       <div class="gradient left"></div>
@@ -16,9 +16,11 @@
       </carousel>
     </div>
   
-    <input id="number2" type="number" formControlName="number2" class="n2" placeholder="0000">
+    <input id="number2" type="number" formControlName="number2" class="n2" placeholder="..et ici-bas">
 
-    <div #result class="result"></div>
+    <div class="equals">égale</div>
+
+    <div class="result"></div>
 
     <div class="spacing">
       <div class="gradient-sp left"></div>
@@ -26,6 +28,7 @@
       <carousel [slideToScroll]=1 [slideWidth]=50 [dots]=false [arrows]=false 
         [counter]=false [maxDomSize]=2 [maxWidthCarousel]=100
         [gapBetweenSlides]=6>
+        <div class="carousel-slide sp">{{ Spacing.None }}</div>  
         <div class="carousel-slide sp">{{ Spacing.Two }}</div>  
         <div class="carousel-slide sp">{{ Spacing.Three }}</div>
       </carousel>

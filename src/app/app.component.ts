@@ -10,6 +10,7 @@ export enum MathOperator {
 }
 
 export enum Spacing {
+  None = 'aucun',
   Two = 'deux',
   Three = 'trois',
 }
@@ -29,7 +30,7 @@ export class AppComponent {
   n1 = signal<number | null>(null);
   n2 = signal<number | null>(null);
   op = signal<MathOperator>(MathOperator.Add);
-  sp = signal<Spacing>(Spacing.Two);
+  sp = signal<Spacing>(Spacing.None);
   result = signal<number | null>(null);
   digitsUpdated = signal<boolean>(false);
   MathOperator = MathOperator;
@@ -133,9 +134,9 @@ export class AppComponent {
 
   private applyUpdateAnimation(digitElement: HTMLElement, newDigit: string) {
     const animation = digitElement.animate([
-        { transform: 'translateY(1px)', opacity: '100%' },
+        { opacity: '100%' },
         { opacity: '0%' },
-        { transform: 'translateY(-1px)', opacity: '100%' }
+        { opacity: '100%' }
     ], {
         duration: 500,
         easing: 'ease-in-out',
@@ -158,11 +159,12 @@ export class AppComponent {
 
     const children = Array.from(resultElement.children) as HTMLElement[];
 
-    const spacingValue = spacing === Spacing.Two ? 2 : 3;
-
     children.forEach(child => {
       child.style.marginRight = '';
     });
+
+    if (spacing === Spacing.None) return;
+    const spacingValue = spacing === Spacing.Two ? 2 : 3;
   
     children.filter(child => /^\d+$/.test(child.innerText.trim()))
       .forEach((child, index) => {
@@ -197,6 +199,7 @@ export class AppComponent {
 
       if (slideAndID.carouselID === 1){
         const spacings = [
+          Spacing.None,
           Spacing.Two,
           Spacing.Three
         ];
