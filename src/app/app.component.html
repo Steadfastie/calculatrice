@@ -1,6 +1,6 @@
 <div class="container">
   <form [formGroup]="form" class="form">
-    <input id="number1" type="number" formControlName="number1" class="n1" placeholder="entre ici-là..">
+    <input id="number1" type="text" formControlName="number1" class="n1" placeholder="entre ici-là..">
     
     <div class="operators">
       <div class="gradient left"></div>
@@ -16,9 +16,9 @@
       </carousel>
     </div>
   
-    <input id="number2" type="number" formControlName="number2" class="n2" placeholder="..et ici-bas">
+    <input id="number2" type="text" formControlName="number2" class="n2" placeholder="..et ici-bas">
 
-    <div class="equals">égale</div>
+    <div class="equals" [ngClass]="{ 'clicked': isClicked }" (click)="randomise()">égale</div>
 
     <div class="result"></div>
 

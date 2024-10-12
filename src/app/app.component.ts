@@ -35,6 +35,7 @@ export class AppComponent {
   digitsUpdated = signal<boolean>(false);
   MathOperator = MathOperator;
   Spacing = Spacing;
+  isClicked = false;
 
   constructor(private formBuilder: FormBuilder, 
     private carouselService: CarouselService
@@ -48,6 +49,10 @@ export class AppComponent {
       this.n1.set(values.number1 ? parseFloat(values.number1) : null);
       this.n2.set(values.number2 ? parseFloat(values.number2) : null);
       this.calculateResult();
+    });
+
+    this.form.valueChanges.subscribe(values => {
+      this.formatNumbers();
     });
 
     effect(() => {
@@ -160,17 +165,47 @@ export class AppComponent {
     const children = Array.from(resultElement.children) as HTMLElement[];
 
     children.forEach(child => {
-      child.style.marginRight = '';
+      child.style.marginLeft = '';
     });
 
     if (spacing === Spacing.None) return;
     const spacingValue = spacing === Spacing.Two ? 2 : 3;
   
-    children.filter(child => /^\d+$/.test(child.innerText.trim()))
+    children
+      .filter(child => /^\d+$/.test(child.innerText.trim()))
+      .reverse()
       .forEach((child, index) => {
         if ((index + 1) % spacingValue === 0) {
-          child.style.marginRight = '3px'; 
+          child.style.marginLeft = '3px';
         }
+    });
+  }
+
+  randomise(){
+    this.isClicked = true;
+    this.form.patchValue({
+      number1: Math.floor(Math.random() * Math.pow(10, 9)),
+      number2: Math.floor(Math.random() * Math.pow(10, 9))
+    });
+    setTimeout(() => {
+      this.isClicked = false;
+    }, 300);
+  }
+
+  formatNumbers() {
+    const inputElements = [
+      document.querySelector(`.n1`) as HTMLInputElement,
+      document.querySelector(`.n2`) as HTMLInputElement
+    ];
+    inputElements.forEach(inputElement => {
+      let value = inputElement.value.replace(/,/g, '');
+    
+      if (!isNaN(Number(value))) {
+        const [whole, fraction] = value.split('.');
+        const formattedWhole = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        const formattedValue = fraction ? `${formattedWhole}.${fraction}` : formattedWhole;
+        inputElement.value = formattedValue;
+      }
     });
   }
 
